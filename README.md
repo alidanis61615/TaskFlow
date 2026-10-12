@@ -34,7 +34,9 @@ Görevler `completed ASC, priority DESC, created_at DESC` sırasıyla okunur. G�
 ## Doğrulanan işlevler
 GitHub Actions Flutter kontrolleri başarılı oldu ve Android APK derlendi. Samsung Android telefondan paylaşılan ekran görüntülerinde uygulamanın açılması, tema değiştirme, görev ekleme, tamamlanma sayacı/çubuğu, metin araması ve Biten filtresi görüldü.
 
-**Henüz ayrıca doğrulanması gerekenler:** Uygulama yeniden başlatıldığında verinin kalıcılığı, düzenleme ve silme akışları, daha geniş cihaz testleri.
+**Ek cihaz testleri (kullanıcı tarafından doğrulandı):** Uygulama tamamen kapatılıp yeniden açıldığında kayıtlı görevlerin korunması (SQLite kalıcılığı), mevcut görevi düzenleme ve görev silme işlemleri başarıyla denendi.
+
+**Henüz ayrıca doğrulanması gerekenler:** Daha geniş cihaz uyumluluğu, uç durumlar ve uzun süreli kullanım testleri.
 
 ## APK oluşturma
 GitHub'da **Actions → Build Android APK** iş akışının başarılı çalıştırmasını açın. **Artifacts** bölümündeki `TaskFlow-Android-APK` paketinden APK alınabilir. Bu, portföy/test amaçlı derlemedir; mağaza yayını değildir.
