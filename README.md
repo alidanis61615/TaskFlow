@@ -1,20 +1,52 @@
-# TaskFlow — Flutter Task Manager
+# TaskFlow — Flutter Görev Takip Uygulaması
 
-A Flutter and Dart task manager with local SQLite storage.
+Flutter ve Dart ile geliştirilen, Android'de çevrimdışı çalışan görev yönetimi uygulaması. Bu depo, portföy için sıfırdan yeniden oluşturulan bir projedir; eski bir staj projesinin kaynak kodu değildir.
 
-## Planned / implemented in source package
-- Create, edit, delete and complete tasks
-- Search and filter tasks
-- Task priorities and progress
-- Light and dark themes
-- Offline persistence with SQLite
+## Özellikler
+- Başlık, açıklama ve öncelik (Düşük / Normal / Yüksek) ile görev ekleme ve düzenleme
+- Görevleri tamamlama, silme ve tamamlanma oranını ilerleme çubuğunda görme
+- Başlık ve açıklama içinde metin arama; Tümü / Aktif / Biten filtreleri
+- Açık ve koyu tema; tema seçimini cihazda saklama
+- SQLite ile çevrimdışı görev kaydı
 
-## Running locally
-1. Install the Flutter SDK and Android toolchain.
-2. Run `flutter create --platforms=android .` from the project root to generate Android platform files.
-3. Run `flutter pub get` and `flutter run`.
+## Teknik mimari
+- **Arayüz:** Flutter Material 3; `TaskFlowApp` ve `TaskHome` adlı `StatefulWidget` bileşenleri
+- **Durum yönetimi:** `setState()`; veritabanı işlemlerinden sonra `refresh()` ile görev listesi yeniden okunur
+- **Veri modeli:** `Task`; `toMap()`, `fromMap()` ve `copyWith()` ile SQLite eşleme
+- **Veri erişimi:** `TaskDatabase` singleton sınıfı, `sqflite` üzerinden ekleme/güncelleme/silme/listeleme
+- **Tema tercihi:** `shared_preferences` ile `dark` anahtarı
+- **CI:** GitHub Actions ile Flutter analiz/test kontrolü ve Android APK oluşturma
 
-## Status
-**Work in progress.** Android builds and automated tests have not yet been verified. Screenshots will be added after device testing.
+## SQLite veritabanı
+Veritabanı dosyası: `taskflow.db`. Tablo: `tasks`.
 
-This is a new portfolio reconstruction, not an archived copy of an internship project.
+| Alan | Tür | Açıklama |
+| --- | --- | --- |
+| `id` | INTEGER PRIMARY KEY AUTOINCREMENT | Benzersiz görev kimliği |
+| `title` | TEXT NOT NULL | Görev başlığı |
+| `description` | TEXT NOT NULL | Görev açıklaması |
+| `priority` | INTEGER NOT NULL | 0 düşük, 1 normal, 2 yüksek |
+| `completed` | INTEGER NOT NULL | 0 aktif, 1 tamamlandı |
+| `created_at` | TEXT NOT NULL | ISO 8601 oluşturulma zamanı |
+
+Görevler `completed ASC, priority DESC, created_at DESC` sırasıyla okunur. Güncelleme ve silme işlemleri `id` üzerinden parametreli sorgularla yapılır. Arama ve durum filtreleri, yüklenmiş görev listesine arayüz tarafında uygulanır.
+
+## Doğrulanan işlevler
+GitHub Actions Flutter kontrolleri başarılı oldu ve Android APK derlendi. Samsung Android telefondan paylaşılan ekran görüntülerinde uygulamanın açılması, tema değiştirme, görev ekleme, tamamlanma sayacı/çubuğu, metin araması ve Biten filtresi görüldü.
+
+**Henüz ayrıca doğrulanması gerekenler:** Uygulama yeniden başlatıldığında verinin kalıcılığı, düzenleme ve silme akışları, daha geniş cihaz testleri.
+
+## APK oluşturma
+GitHub'da **Actions → Build Android APK** iş akışının başarılı çalıştırmasını açın. **Artifacts** bölümündeki `TaskFlow-Android-APK` paketinden APK alınabilir. Bu, portföy/test amaçlı derlemedir; mağaza yayını değildir.
+
+## Yerel çalıştırma
+Flutter SDK ve Android araçları kurulu olmalıdır.
+
+```bash
+flutter create --platforms=android --project-name taskflow .
+flutter pub get
+flutter run
+```
+
+## Geliştirme durumu
+Aktif geliştirme. Ekran görüntüleri ve ek cihaz testleri ilerleyen sürümlerde eklenecek.
