@@ -238,6 +238,8 @@ class _TaskHomeState extends State<TaskHome> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final overdue = tasks.where((t) => !t.completed && t.dueDate != null && t.dueDate!.isBefore(today)).length;
+    final dueToday = tasks.where((t) => !t.completed && t.dueDate != null && DateUtils.isSameDay(t.dueDate, today)).toList();
+    final dueTomorrow = tasks.where((t) => !t.completed && t.dueDate != null && DateUtils.isSameDay(t.dueDate, today.add(const Duration(days: 1)))).toList();
     return Scaffold(
       appBar: AppBar(title: const Text('TaskFlow'),
         actions: [IconButton(
@@ -267,6 +269,20 @@ class _TaskHomeState extends State<TaskHome> {
                   label: Text('$overdue geciken')),
               ]),
             ]))),
+          if (overdue > 0 || dueToday.isNotEmpty || dueTomorrow.isNotEmpty)
+            Card(color: Theme.of(context).colorScheme.secondaryContainer,
+              child: Padding(padding: const EdgeInsets.all(12), child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Row(children: [Icon(Icons.notifications_active_outlined),
+                    SizedBox(width: 8), Text('Yaklaşan görevler',
+                      style: TextStyle(fontWeight: FontWeight.bold))]),
+                  if (overdue > 0) Text('$overdue geciken görevin var.'),
+                  if (dueToday.isNotEmpty) Text('Bugün bitmesi gereken: ${dueToday.map((t) => t.title).take(3).join(', ')}'),
+                  if (dueTomorrow.isNotEmpty) Text('Yarın bitmesi gereken: ${dueTomorrow.map((t) => t.title).take(3).join(', ')}'),
+                  const SizedBox(height: 4),
+                  const Text('Bu uyarılar uygulama açıkken gösterilir.',
+                    style: TextStyle(fontSize: 12)),
+                ]))),
           const SizedBox(height: 16),
           TextField(decoration: const InputDecoration(
             prefixIcon: Icon(Icons.search), hintText: 'Görev ara...',
