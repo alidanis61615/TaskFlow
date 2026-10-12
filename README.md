@@ -2,6 +2,14 @@
 
 Flutter ve Dart ile geliştirilen, Android'de çevrimdışı çalışan görev yönetimi uygulaması. Bu depo, portföy için sıfırdan yeniden oluşturulan bir projedir; eski bir staj projesinin kaynak kodu değildir.
 
+## Uygulama ekran görüntüleri
+
+Gerçek Android cihazda çalışan uygulamadan alınmış ekran görüntüleri:
+
+| Açık tema | Koyu tema | Tamamlanan görev |
+| --- | --- | --- |
+| <img src="light-theme.jpg" alt="TaskFlow açık tema" width="240" /> | <img src="dark-theme.jpg" alt="TaskFlow koyu tema" width="240" /> | <img src="completed-task.jpg" alt="TaskFlow tamamlanan görev" width="240" /> |
+
 ## Özellikler
 - Başlık, açıklama ve öncelik (Düşük / Normal / Yüksek) ile görev ekleme ve düzenleme
 - Görevleri tamamlama, silme ve tamamlanma oranını ilerleme çubuğunda görme
@@ -51,4 +59,4 @@ flutter run
 ```
 
 ## Geliştirme durumu
-Aktif geliştirme. Ekran görüntüleri ve ek cihaz testleri ilerleyen sürümlerde eklenecek.
+Aktif geliştirme. Gerçek cihaz ekran görüntüleri eklendi; ek cihaz ve uç durum testleri sonraki sürümlerde yapılacak.
