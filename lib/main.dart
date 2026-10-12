@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -46,7 +46,7 @@ class TaskDatabase {
 
   Future<Database> get database async {
     if (_db != null) return _db!;
-    _db = await openDatabase(join(await getDatabasesPath(), 'taskflow.db'),
+    _db = await openDatabase(p.join(await getDatabasesPath(), 'taskflow.db'),
       version: 1, onCreate: (db, _) async {
         await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, completed INTEGER NOT NULL, created_at TEXT NOT NULL)');
       });
