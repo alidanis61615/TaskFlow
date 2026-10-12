@@ -15,13 +15,16 @@ class Task {
   final int priority;
   final bool completed;
   final DateTime createdAt;
+  final DateTime? dueDate;
 
   const Task({this.id, required this.title, this.description = '',
-    this.priority = 1, this.completed = false, required this.createdAt});
+    this.priority = 1, this.completed = false, required this.createdAt,
+    this.dueDate});
 
   Map<String, Object?> toMap() => {
     'title': title, 'description': description, 'priority': priority,
     'completed': completed ? 1 : 0, 'created_at': createdAt.toIso8601String(),
+    'due_date': dueDate?.toIso8601String(),
   };
 
   factory Task.fromMap(Map<String, Object?> map) => Task(
@@ -30,13 +33,15 @@ class Task {
     priority: map['priority'] as int,
     completed: (map['completed'] as int) == 1,
     createdAt: DateTime.parse(map['created_at'] as String),
+    dueDate: map['due_date'] == null ? null : DateTime.parse(map['due_date'] as String),
   );
 
   Task copyWith({String? title, String? description, int? priority,
     bool? completed}) => Task(id: id, title: title ?? this.title,
     description: description ?? this.description,
     priority: priority ?? this.priority,
-    completed: completed ?? this.completed, createdAt: createdAt);
+    completed: completed ?? this.completed, createdAt: createdAt,
+    dueDate: dueDate);
 }
 
 class TaskDatabase {
@@ -47,8 +52,12 @@ class TaskDatabase {
   Future<Database> get database async {
     if (_db != null) return _db!;
     _db = await openDatabase(p.join(await getDatabasesPath(), 'taskflow.db'),
-      version: 1, onCreate: (db, _) async {
-        await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, completed INTEGER NOT NULL, created_at TEXT NOT NULL)');
+      version: 2, onCreate: (db, _) async {
+        await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, completed INTEGER NOT NULL, created_at TEXT NOT NULL, due_date TEXT)');
+      }, onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE tasks ADD COLUMN due_date TEXT');
+        }
       });
     return _db!;
   }
@@ -125,6 +134,7 @@ class _TaskHomeState extends State<TaskHome> {
   String search = '';
   int filter = 0;
   bool newestFirst = false;
+  bool dueFirst = false;
 
   @override
   void initState() {
@@ -141,6 +151,7 @@ class _TaskHomeState extends State<TaskHome> {
     final title = TextEditingController(text: task?.title ?? '');
     final description = TextEditingController(text: task?.description ?? '');
     int priority = task?.priority ?? 1;
+    DateTime? due = task?.dueDate;
     final saved = await showDialog<Task>(context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
@@ -151,6 +162,18 @@ class _TaskHomeState extends State<TaskHome> {
                 labelText: 'Başlık')),
               TextField(controller: description, decoration: const InputDecoration(
                 labelText: 'Açıklama')),
+              const SizedBox(height: 12),
+              Row(children: [Expanded(child: Text(due == null ? 'Son tarih: Yok' : 'Son tarih: ${due!.day}.${due!.month}.${due!.year}')),
+                IconButton(tooltip: 'Tarih seç', icon: const Icon(Icons.calendar_month),
+                  onPressed: () async {
+                    final picked = await showDatePicker(context: context,
+                      initialDate: due ?? DateTime.now(),
+                      firstDate: DateTime(2020), lastDate: DateTime(2100));
+                    if (picked != null) update(() => due = picked);
+                  }),
+                IconButton(tooltip: 'Tarihi kaldır', icon: const Icon(Icons.close),
+                  onPressed: due == null ? null : () => update(() => due = null)),
+              ]),
               DropdownButtonFormField<int>(initialValue: priority,
                 decoration: const InputDecoration(labelText: 'Öncelik'),
                 items: const [
@@ -167,7 +190,7 @@ class _TaskHomeState extends State<TaskHome> {
               Navigator.pop(context, Task(id: task?.id,
                 title: title.text.trim(), description: description.text.trim(),
                 priority: priority, completed: task?.completed ?? false,
-                createdAt: task?.createdAt ?? DateTime.now()));
+                createdAt: task?.createdAt ?? DateTime.now(), dueDate: due));
             }, child: const Text('Kaydet')),
           ],
         ),
@@ -190,9 +213,18 @@ class _TaskHomeState extends State<TaskHome> {
     }).toList();
     if (newestFirst) {
       shown.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else if (dueFirst) {
+      shown.sort((a,b) {
+        if(a.dueDate == null) return b.dueDate == null ? 0 : 1;
+        if(b.dueDate == null) return -1;
+        return a.dueDate!.compareTo(b.dueDate!);
+      });
     }
     final done = tasks.where((t) => t.completed).length;
     final high = tasks.where((t) => t.priority == 2 && !t.completed).length;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final overdue = tasks.where((t) => !t.completed && t.dueDate != null && t.dueDate!.isBefore(today)).length;
     return Scaffold(
       appBar: AppBar(title: const Text('TaskFlow'),
         actions: [IconButton(
@@ -206,7 +238,7 @@ class _TaskHomeState extends State<TaskHome> {
         child: Column(children: [
           Text('$done / ${tasks.length} görev tamamlandı'),
           const SizedBox(height: 6),
-          Text('${tasks.length - done} aktif · $high yüksek öncelikli'),
+          Text('${tasks.length - done} aktif · $high yüksek öncelikli · $overdue geciken'),
           const SizedBox(height: 8),
           LinearProgressIndicator(value: tasks.isEmpty ? 0 : done / tasks.length),
           const SizedBox(height: 16),
@@ -223,9 +255,9 @@ class _TaskHomeState extends State<TaskHome> {
           ], selected: {filter},
             onSelectionChanged: (v) => setState(() => filter = v.first)),
           Align(alignment: Alignment.centerRight, child: TextButton.icon(
-            onPressed: () => setState(() => newestFirst = !newestFirst),
-            icon: Icon(newestFirst ? Icons.sort : Icons.access_time),
-            label: Text(newestFirst ? 'Önceliğe göre sırala' : 'En yeni önce'))),
+            onPressed: () => setState(() {if (!newestFirst && !dueFirst) {dueFirst = true;} else if (dueFirst) {dueFirst = false; newestFirst = true;} else {newestFirst = false;}}),
+            icon: const Icon(Icons.sort),
+            label: Text(dueFirst ? 'Son tarihe göre' : newestFirst ? 'En yeni önce' : 'Önceliğe göre'))),
           Expanded(child: shown.isEmpty
             ? const Center(child: Text('Görev bulunamadı'))
             : ListView.builder(itemCount: shown.length,
@@ -241,7 +273,7 @@ class _TaskHomeState extends State<TaskHome> {
                   title: Text(task.title, style: TextStyle(
                     decoration: task.completed
                       ? TextDecoration.lineThrough : null)),
-                  subtitle: Text('${task.description}\nÖncelik: ${['Düşük', 'Normal', 'Yüksek'][task.priority]}'),
+                  subtitle: Text('${task.description}\nÖncelik: ${['Düşük', 'Normal', 'Yüksek'][task.priority]}${task.dueDate == null ? '' : '\nSon tarih: ${task.dueDate!.day}.${task.dueDate!.month}.${task.dueDate!.year}'}${!task.completed && task.dueDate != null && task.dueDate!.isBefore(today) ? ' · GECİKTİ' : ''}'),
                   isThreeLine: true,
                   onTap: () => edit(task),
                   trailing: IconButton(icon: const Icon(Icons.delete_outline),
