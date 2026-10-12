@@ -249,11 +249,24 @@ class _TaskHomeState extends State<TaskHome> {
         label: const Text('Görev ekle')),
       body: Padding(padding: const EdgeInsets.all(16),
         child: Column(children: [
-          Text('$done / ${tasks.length} görev tamamlandı'),
-          const SizedBox(height: 6),
-          Text('${tasks.length - done} aktif · $high yüksek öncelikli · $overdue geciken'),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(value: tasks.isEmpty ? 0 : done / tasks.length),
+          Card(child: Padding(padding: const EdgeInsets.all(16), child:
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Görev özeti', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text('$done / ${tasks.length} görev tamamlandı'),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(value: tasks.isEmpty ? 0 : done / tasks.length,
+                minHeight: 10, borderRadius: BorderRadius.circular(8)),
+              const SizedBox(height: 14),
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                Chip(avatar: const Icon(Icons.pending_actions, size: 18),
+                  label: Text('${tasks.length - done} aktif')),
+                Chip(avatar: const Icon(Icons.priority_high, size: 18),
+                  label: Text('$high önemli')),
+                Chip(avatar: const Icon(Icons.warning_amber, size: 18),
+                  label: Text('$overdue geciken')),
+              ]),
+            ]))),
           const SizedBox(height: 16),
           TextField(decoration: const InputDecoration(
             prefixIcon: Icon(Icons.search), hintText: 'Görev ara...',
@@ -266,13 +279,14 @@ class _TaskHomeState extends State<TaskHome> {
                 child: ChoiceChip(label: Text(c), selected: categoryFilter == c,
                   onSelected: (_) => setState(() => categoryFilter = c)))).toList())),
           const SizedBox(height: 8),
-          SegmentedButton<int>(segments: const [
+          SingleChildScrollView(scrollDirection: Axis.horizontal,
+            child: SegmentedButton<int>(segments: const [
             ButtonSegment(value: 0, label: Text('Tümü')),
             ButtonSegment(value: 1, label: Text('Aktif')),
             ButtonSegment(value: 2, label: Text('Biten')),
             ButtonSegment(value: 3, label: Text('Önemli')),
           ], selected: {filter},
-            onSelectionChanged: (v) => setState(() => filter = v.first)),
+            onSelectionChanged: (v) => setState(() => filter = v.first))),
           Align(alignment: Alignment.centerRight, child: TextButton.icon(
             onPressed: () => setState(() {if (!newestFirst && !dueFirst) {dueFirst = true;} else if (dueFirst) {dueFirst = false; newestFirst = true;} else {newestFirst = false;}}),
             icon: const Icon(Icons.sort),
@@ -290,10 +304,13 @@ class _TaskHomeState extends State<TaskHome> {
                       await refresh();
                     }),
                   title: Text(task.title, style: TextStyle(
+                    fontWeight: FontWeight.w600,
                     decoration: task.completed
                       ? TextDecoration.lineThrough : null)),
                   subtitle: Text('${task.description}\n${task.category} · Öncelik: ${['Düşük', 'Normal', 'Yüksek'][task.priority]}${task.dueDate == null ? '' : '\nSon tarih: ${task.dueDate!.day}.${task.dueDate!.month}.${task.dueDate!.year}'}${!task.completed && task.dueDate != null && task.dueDate!.isBefore(today) ? ' · GECİKTİ' : ''}'),
                   isThreeLine: true,
+                  tileColor: !task.completed && task.dueDate != null && task.dueDate!.isBefore(today)
+                    ? Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.35) : null,
                   onTap: () => edit(task),
                   trailing: IconButton(icon: const Icon(Icons.delete_outline),
                     tooltip: 'Sil', onPressed: () async {
