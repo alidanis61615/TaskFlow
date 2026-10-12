@@ -16,15 +16,16 @@ class Task {
   final bool completed;
   final DateTime createdAt;
   final DateTime? dueDate;
+  final String category;
 
   const Task({this.id, required this.title, this.description = '',
     this.priority = 1, this.completed = false, required this.createdAt,
-    this.dueDate});
+    this.dueDate, this.category = 'Genel'});
 
   Map<String, Object?> toMap() => {
     'title': title, 'description': description, 'priority': priority,
     'completed': completed ? 1 : 0, 'created_at': createdAt.toIso8601String(),
-    'due_date': dueDate?.toIso8601String(),
+    'due_date': dueDate?.toIso8601String(), 'category': category,
   };
 
   factory Task.fromMap(Map<String, Object?> map) => Task(
@@ -34,6 +35,7 @@ class Task {
     completed: (map['completed'] as int) == 1,
     createdAt: DateTime.parse(map['created_at'] as String),
     dueDate: map['due_date'] == null ? null : DateTime.parse(map['due_date'] as String),
+    category: (map['category'] as String?) ?? 'Genel',
   );
 
   Task copyWith({String? title, String? description, int? priority,
@@ -41,7 +43,7 @@ class Task {
     description: description ?? this.description,
     priority: priority ?? this.priority,
     completed: completed ?? this.completed, createdAt: createdAt,
-    dueDate: dueDate);
+    dueDate: dueDate, category: category);
 }
 
 class TaskDatabase {
@@ -52,11 +54,14 @@ class TaskDatabase {
   Future<Database> get database async {
     if (_db != null) return _db!;
     _db = await openDatabase(p.join(await getDatabasesPath(), 'taskflow.db'),
-      version: 2, onCreate: (db, _) async {
-        await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, completed INTEGER NOT NULL, created_at TEXT NOT NULL, due_date TEXT)');
+      version: 3, onCreate: (db, _) async {
+        await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL, priority INTEGER NOT NULL, completed INTEGER NOT NULL, created_at TEXT NOT NULL, due_date TEXT, category TEXT NOT NULL DEFAULT "Genel")');
       }, onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           await db.execute('ALTER TABLE tasks ADD COLUMN due_date TEXT');
+        }
+        if (oldVersion < 3) {
+          await db.execute('ALTER TABLE tasks ADD COLUMN category TEXT NOT NULL DEFAULT "Genel"');
         }
       });
     return _db!;
@@ -135,6 +140,8 @@ class _TaskHomeState extends State<TaskHome> {
   int filter = 0;
   bool newestFirst = false;
   bool dueFirst = false;
+  String categoryFilter = 'Tümü';
+  static const categories = ['Genel', 'İş', 'Okul', 'Kişisel', 'Alışveriş'];
 
   @override
   void initState() {
@@ -152,6 +159,7 @@ class _TaskHomeState extends State<TaskHome> {
     final description = TextEditingController(text: task?.description ?? '');
     int priority = task?.priority ?? 1;
     DateTime? due = task?.dueDate;
+    String category = task?.category ?? 'Genel';
     final saved = await showDialog<Task>(context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
@@ -174,6 +182,10 @@ class _TaskHomeState extends State<TaskHome> {
                 IconButton(tooltip: 'Tarihi kaldır', icon: const Icon(Icons.close),
                   onPressed: due == null ? null : () => update(() => due = null)),
               ]),
+              DropdownButtonFormField<String>(initialValue: category,
+                decoration: const InputDecoration(labelText: 'Kategori'),
+                items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                onChanged: (v) => update(() => category = v ?? 'Genel')),
               DropdownButtonFormField<int>(initialValue: priority,
                 decoration: const InputDecoration(labelText: 'Öncelik'),
                 items: const [
@@ -190,7 +202,8 @@ class _TaskHomeState extends State<TaskHome> {
               Navigator.pop(context, Task(id: task?.id,
                 title: title.text.trim(), description: description.text.trim(),
                 priority: priority, completed: task?.completed ?? false,
-                createdAt: task?.createdAt ?? DateTime.now(), dueDate: due));
+                createdAt: task?.createdAt ?? DateTime.now(), dueDate: due,
+                category: category));
             }, child: const Text('Kaydet')),
           ],
         ),
@@ -208,7 +221,7 @@ class _TaskHomeState extends State<TaskHome> {
     final shown = tasks.where((t) {
       final matches = ('${t.title} ${t.description}')
         .toLowerCase().contains(search.toLowerCase());
-      return matches && (filter == 0 || (filter == 1 && !t.completed) ||
+      return matches && (categoryFilter == 'Tümü' || t.category == categoryFilter) && (filter == 0 || (filter == 1 && !t.completed) ||
         (filter == 2 && t.completed) || (filter == 3 && t.priority == 2 && !t.completed));
     }).toList();
     if (newestFirst) {
@@ -247,6 +260,12 @@ class _TaskHomeState extends State<TaskHome> {
             border: OutlineInputBorder()),
             onChanged: (v) => setState(() => search = v)),
           const SizedBox(height: 8),
+          SingleChildScrollView(scrollDirection: Axis.horizontal,
+            child: Row(children: ['Tümü', ...categories].map((c) =>
+              Padding(padding: const EdgeInsets.only(right: 6),
+                child: ChoiceChip(label: Text(c), selected: categoryFilter == c,
+                  onSelected: (_) => setState(() => categoryFilter = c)))).toList())),
+          const SizedBox(height: 8),
           SegmentedButton<int>(segments: const [
             ButtonSegment(value: 0, label: Text('Tümü')),
             ButtonSegment(value: 1, label: Text('Aktif')),
@@ -273,7 +292,7 @@ class _TaskHomeState extends State<TaskHome> {
                   title: Text(task.title, style: TextStyle(
                     decoration: task.completed
                       ? TextDecoration.lineThrough : null)),
-                  subtitle: Text('${task.description}\nÖncelik: ${['Düşük', 'Normal', 'Yüksek'][task.priority]}${task.dueDate == null ? '' : '\nSon tarih: ${task.dueDate!.day}.${task.dueDate!.month}.${task.dueDate!.year}'}${!task.completed && task.dueDate != null && task.dueDate!.isBefore(today) ? ' · GECİKTİ' : ''}'),
+                  subtitle: Text('${task.description}\n${task.category} · Öncelik: ${['Düşük', 'Normal', 'Yüksek'][task.priority]}${task.dueDate == null ? '' : '\nSon tarih: ${task.dueDate!.day}.${task.dueDate!.month}.${task.dueDate!.year}'}${!task.completed && task.dueDate != null && task.dueDate!.isBefore(today) ? ' · GECİKTİ' : ''}'),
                   isThreeLine: true,
                   onTap: () => edit(task),
                   trailing: IconButton(icon: const Icon(Icons.delete_outline),
