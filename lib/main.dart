@@ -124,6 +124,7 @@ class _TaskHomeState extends State<TaskHome> {
   List<Task> tasks = [];
   String search = '';
   int filter = 0;
+  bool newestFirst = false;
 
   @override
   void initState() {
@@ -185,9 +186,13 @@ class _TaskHomeState extends State<TaskHome> {
       final matches = ('${t.title} ${t.description}')
         .toLowerCase().contains(search.toLowerCase());
       return matches && (filter == 0 || (filter == 1 && !t.completed) ||
-        (filter == 2 && t.completed));
+        (filter == 2 && t.completed) || (filter == 3 && t.priority == 2 && !t.completed));
     }).toList();
+    if (newestFirst) {
+      shown.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }
     final done = tasks.where((t) => t.completed).length;
+    final high = tasks.where((t) => t.priority == 2 && !t.completed).length;
     return Scaffold(
       appBar: AppBar(title: const Text('TaskFlow'),
         actions: [IconButton(
@@ -200,6 +205,8 @@ class _TaskHomeState extends State<TaskHome> {
       body: Padding(padding: const EdgeInsets.all(16),
         child: Column(children: [
           Text('$done / ${tasks.length} görev tamamlandı'),
+          const SizedBox(height: 6),
+          Text('${tasks.length - done} aktif · $high yüksek öncelikli'),
           const SizedBox(height: 8),
           LinearProgressIndicator(value: tasks.isEmpty ? 0 : done / tasks.length),
           const SizedBox(height: 16),
@@ -212,9 +219,13 @@ class _TaskHomeState extends State<TaskHome> {
             ButtonSegment(value: 0, label: Text('Tümü')),
             ButtonSegment(value: 1, label: Text('Aktif')),
             ButtonSegment(value: 2, label: Text('Biten')),
+            ButtonSegment(value: 3, label: Text('Önemli')),
           ], selected: {filter},
             onSelectionChanged: (v) => setState(() => filter = v.first)),
-          const SizedBox(height: 8),
+          Align(alignment: Alignment.centerRight, child: TextButton.icon(
+            onPressed: () => setState(() => newestFirst = !newestFirst),
+            icon: Icon(newestFirst ? Icons.sort : Icons.access_time),
+            label: Text(newestFirst ? 'Önceliğe göre sırala' : 'En yeni önce'))),
           Expanded(child: shown.isEmpty
             ? const Center(child: Text('Görev bulunamadı'))
             : ListView.builder(itemCount: shown.length,
@@ -236,6 +247,18 @@ class _TaskHomeState extends State<TaskHome> {
                   trailing: IconButton(icon: const Icon(Icons.delete_outline),
                     tooltip: 'Sil', onPressed: () async {
                       if (task.id == null) return;
+                      final confirmed = await showDialog<bool>(context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          title: const Text('Görev silinsin mi?'),
+                          content: Text('"${task.title}" kalıcı olarak silinecek.'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(dialogContext, false),
+                              child: const Text('Vazgeç')),
+                            FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
+                              child: const Text('Sil')),
+                          ],
+                        ));
+                      if (confirmed != true) return;
                       await TaskDatabase.instance.delete(task.id!);
                       await refresh();
                     }),
