@@ -2,6 +2,8 @@ name: Flutter checks
 on:
   push:
   pull_request:
+permissions:
+  contents: read
 jobs:
   analyze-and-test:
     runs-on: ubuntu-latest
@@ -10,8 +12,12 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: flutter create --platforms=android .
-      - run: rm -f test/widget_test.dart
+          flutter-version: '3.47.7'
+          cache: true
+      - name: Prepare Android project
+        run: |
+          flutter create --platforms=android --project-name taskflow .
+          rm -f test/widget_test.dart
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
