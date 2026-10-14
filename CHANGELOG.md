@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 — 2026-10-14
+
+- Klavye açıkken küçük ekranda taşan görev özeti kaydırılabilir görünümle düzeltildi.
+- Küçük ekran regresyon testi eklendi; 12 birim/arayüz testi başarılı.
+- Android emülatöründe görevler, arama, tamamlanan filtre ve kalıcı tema denendi.
+- Üretim APK'sını kurma ve yeniden açılışta kayıtları koruma doğrulandı.
+- Örnek görevlerle dolu ekranlar ve kısa video eklendi.
+
 ## 1.1.0 — 2026-10-14
 
 - Model, SQLite repository, query logic, home screen and task editor are separate files.

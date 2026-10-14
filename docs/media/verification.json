@@ -1,0 +1,13 @@
+{
+  "app": "TaskFlow",
+  "commit": "d5ef040e454eb1787c60049f7ead942a4dd07d8a",
+  "platform": "Android API 35 emulator",
+  "data": "fictional portfolio sample records",
+  "checks": [
+    "integration workflow passed",
+    "production APK installed with adb -r",
+    "application force-stopped and relaunched",
+    "saved data visible after restart"
+  ],
+  "run_url": "https://github.com/alidanis61615/TaskFlow/actions/runs/38556710316"
+}

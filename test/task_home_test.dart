@@ -79,6 +79,8 @@ void main() {
       'Portföy',
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byType(Checkbox));
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(Checkbox));
     await tester.pumpAndSettle();
     expect(repository.tasks.single.completed, isTrue);
@@ -109,5 +111,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Görev başlığı gerekli'), findsOneWidget);
     expect(repository.tasks, isEmpty);
+  });
+
+  testWidgets('Klavye ve küçük ekranda görev özeti taşmaz', (tester) async {
+    tester.view.physicalSize = const Size(390, 760);
+    tester.view.devicePixelRatio = 1;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetViewInsets);
+    final repository = MemoryTasks();
+    repository.tasks.add(
+      Task(
+        id: 1,
+        title: 'Küçük ekran görevi',
+        createdAt: DateTime.now(),
+        dueDate: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TaskHome(
+          onThemeToggle: () {},
+          dark: false,
+          repository: repository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(
+      find.text('Biten'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Biten'), findsOneWidget);
   });
 }

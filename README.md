@@ -7,6 +7,14 @@ Flutter ve Dart ile geliştirilen Android uygulaması; görevleri öncelik, kate
 
 **[Ekranlar](#ekran-görüntüleri) · [Özellikler](#özellikler) · [Kurulum](#yerelde-çalıştırma) · [Android APK indir](https://github.com/alidanis61615/TaskFlow/releases/latest)**
 
+## Bu portföy sürümündeki katkım
+
+Görev modeli, SQLite CRUD, kategori/öncelik/son tarih akışları ve arama/filtreleme üzerinde çalıştım. Model, veri erişimi, sorgu mantığı, ekran ve düzenleme formunu ayrı dosyalara ayırdım.
+
+**Teknik kararım:** Veritabanı sürüm geçişleriyle mevcut görevleri korumak ve ekranın veri kaynağını bir repository arayüzü üzerinden kullanmak. Böylece veri işlemleri ile arayüz ayrı test edilebilir.
+
+**Çözdüğüm hata:** Boş görev başlığının kaydedilmesini engelledim ve veri yükleme/kaydetme hatalarını kullanıcıya gösterdim. SQLite sürüm 1 → 3 geçişinde eski görevlerin korunmasını otomatik testle doğruladım. Android testinin yakaladığı, klavye açıkken küçük ekran taşmasını kaydırılabilir görünümle düzelttim ve bir regresyon testi ekledim.
+
 ## Teknik incelemeye hızlı başlangıç
 
 | İnceleme | Kaynak |
@@ -18,11 +26,15 @@ Flutter ve Dart ile geliştirilen Android uygulaması; görevleri öncelik, kate
 
 ## Ekran görüntüleri
 
-Gerçek Android cihazda çalışan uygulamadan alınan görüntüler.
+Android emülatöründe çalışan uygulamadan alınan gerçek arayüz görüntüleri. Görevler **kurgusal portföy kayıtlarıdır**. Ekranlar [Android test akışı](.github/workflows/android-demo.yml) ile yeniden oluşturulabilir.
 
-| Açık tema | Koyu tema | Tamamlanan görev |
-| --- | --- | --- |
-| <a href="light-theme.jpg"><img src="light-theme.jpg" alt="TaskFlow açık tema" width="230"></a> | <a href="dark-theme.jpg"><img src="dark-theme.jpg" alt="TaskFlow koyu tema" width="230"></a> | <a href="completed-task.jpg"><img src="completed-task.jpg" alt="TaskFlow tamamlanan görev" width="230"></a> |
+| Görev listesi | Arama | Tamamlanan görevler | Koyu tema |
+| --- | --- | --- | --- |
+| <img src="docs/media/taskflow-light.png" alt="TaskFlow: altı görev ve günlük özet" width="210"> | <img src="docs/media/taskflow-search.png" alt="TaskFlow: portföy görevini arama" width="210"> | <img src="docs/media/taskflow-completed.png" alt="TaskFlow: tamamlanan görevleri filtreleme" width="210"> | <img src="docs/media/taskflow-dark.png" alt="TaskFlow: kaydedilmiş koyu tema" width="210"> |
+
+## Kısa Android demosu
+
+[Çalışan uygulamanın kısa videosunu aç](docs/media/demo-android.mp4). Kayıt Android API 35 emülatöründe, örnek verilerle alınmıştır. [Doğrulama kaydı](docs/media/verification.json) APK'nın kurulduğunu ve uygulama yeniden açıldığında verilerin görünür kaldığını belgeleyen commit'i içerir. Fiziksel telefon kontrolü için [cihaz rehberini](docs/DEVICE_TEST.md) kullanabilirsiniz.
 
 ## Özellikler
 
@@ -97,7 +109,7 @@ Testler; görev ekleme/düzenleme/tamamlama/silme, sürüm 1 → 3 veritabanı g
 
 **[GitHub Releases → Android APK indir](https://github.com/alidanis61615/TaskFlow/releases/latest)**. Sürüm sayfasının **Assets** bölümündeki `TaskFlow-Android.apk` dosyasını indirin. Kalıcı sürüm dosyası, geçici Actions artefaktının saklama süresine bağlı değildir.
 
-APK, analiz ve testlerden sonra derlenir. Portföy demosu için üretilen APK'dır; mağaza dağıtımı için ayrı üretim imzası gerekir. Yeni sürüm yayınlama, `Build Android APK` iş akışının `main` üzerinden **publish** seçeneğiyle elle çalıştırılır.
+APK analiz ve testlerden sonra derlenir. Bu sürüm, başarılı Android kontrolünde kurulan APK'nın aynısını yayımlar; kaynak commit ve çalışma numarası [doğrulama kaydında](docs/media/verification.json) bulunur. Yayın iş akışı, kaynağın kontrol sonrasında değişmediğini doğrular. APK portföy demosudur; mağaza dağıtımı için ayrı üretim imzası gerekir.
 
 ## Proje hakkında
 
