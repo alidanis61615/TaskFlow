@@ -14,14 +14,14 @@ Sonuç, `docs/media/verification.json` dosyasındaki commit ve çalışma bağla
 
 ## Fiziksel telefonda yapılacak kontrol
 
-Bu liste fiziksel cihazda çalıştırılmadıkça tamamlandı olarak işaretlenmez. Mevcut kayıtlarınız varsa yeni kurulumdan önce yedek alın. Demo APK'ları mağaza için üretim imzasıyla dağıtılmaz; eski kurulumunuz farklı imzalıysa Android güncellemeyi kabul etmeyebilir.
+Bu liste fiziksel cihazda çalıştırılmadıkça tamamlandı olarak işaretlenmez. Mevcut görevlerinizi korumak için eski uygulamayı kaldırmayın; farklı imza nedeniyle güncelleme reddedilirse ayrı bir test cihazında deneyin. Demo APK'ları mağaza için üretim imzasıyla dağıtılmaz; eski kurulumunuz farklı imzalıysa Android güncellemeyi kabul etmeyebilir.
 
 - [ ] Cihaz modeli ve Android sürümü kaydedildi.
 - [ ] GitHub Releases'daki APK indirildi ve uygulama açıldı.
-- [ ] Yeni bir kayıt eklendi; listede ve toplamda doğru gösterildi.
+- [ ] Yeni bir görev eklendi; listede ve görev özetinde doğru gösterildi.
 - [ ] Uygulama kapatılıp açıldı; kayıt korundu.
 - [ ] Düzenleme/silme ve ekranlar arası geçiş denendi.
 - [ ] Klavye açıkken ve küçük ekranda form kontrollerine erişildi.
-- [ ] Kalori Takip için JSON yedek alma/geri yükleme ayrıca denendi.
+- [ ] Tema değiştirildi; yeniden açılışta görevlerle birlikte tema tercihi korundu.
 
 Cihaz: … / Android: … / APK sürümü: … / Tarih: …
