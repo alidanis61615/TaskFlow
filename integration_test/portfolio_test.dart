@@ -44,7 +44,12 @@ void main() {
       await tester.pumpAndSettle();
       await binding.convertFlutterSurfaceToImage();
       await tester.pumpAndSettle();
+      var recordingStarted = false;
       Future<void> capture(String name) async {
+        if (!recordingStarted) {
+          debugPrint('PORTFOLIO_VIDEO_START');
+          recordingStarted = true;
+        }
         await binding.takeScreenshot(name);
         await tester.runAsync(
           () => Future<void>.delayed(const Duration(seconds: 6)),
@@ -87,6 +92,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await capture('taskflow-dark');
+      debugPrint('PORTFOLIO_VIDEO_END');
       expect(preferences.getBool('dark'), true);
       expect((await db.all()).length, 6);
       await tester.pumpWidget(const SizedBox.shrink());
