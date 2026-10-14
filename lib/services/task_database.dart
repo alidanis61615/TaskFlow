@@ -42,6 +42,7 @@ class TaskDatabase implements TaskRepository {
     return _db!;
   }
 
+  @override
   Future<List<Task>> all() async {
     final db = await database;
     final rows = await db.query(
@@ -51,12 +52,14 @@ class TaskDatabase implements TaskRepository {
     return rows.map(Task.fromMap).toList();
   }
 
+  @override
   Future<void> save(Task task) async {
     if (task.title.trim().isEmpty ||
         task.priority < 0 ||
         task.priority > 2 ||
-        !Task.categories.contains(task.category))
+        !Task.categories.contains(task.category)) {
       throw ArgumentError('Geçersiz görev');
+    }
     final db = await database;
     if (task.id == null) {
       await db.insert('tasks', task.toMap());
@@ -75,6 +78,7 @@ class TaskDatabase implements TaskRepository {
     _db = null;
   }
 
+  @override
   Future<void> delete(int id) async {
     final db = await database;
     await db.delete('tasks', where: 'id = ?', whereArgs: [id]);

@@ -40,23 +40,26 @@ class _TaskHomeState extends State<TaskHome> {
   Future<void> refresh() async {
     try {
       final result = await repository.all();
-      if (mounted)
+      if (mounted) {
         setState(() {
           tasks = result;
           loadError = null;
         });
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => loadError = 'Görevler yüklenemedi. Yeniden deneyebilirsiniz.',
         );
+      }
     }
   }
 
   void showError(String message) {
-    if (mounted)
+    if (mounted) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   Future<void> edit([Task? task]) async {
