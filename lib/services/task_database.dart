@@ -5,20 +5,19 @@ import '../models/task.dart';
 import 'task_repository.dart';
 
 class TaskDatabase implements TaskRepository {
-  TaskDatabase({DatabaseFactory? factory, String? databasePath})
-    : _factory = factory,
-      _path = databasePath;
+  TaskDatabase({this.factory, this.databasePath});
   static final instance = TaskDatabase();
-  final DatabaseFactory? _factory;
-  final String? _path;
+  final DatabaseFactory? factory;
+  final String? databasePath;
   Database? _db;
 
   Future<Database> get database async {
     if (_db != null) return _db!;
-    final factory = _factory ?? databaseFactory;
+    final activeFactory = factory ?? databaseFactory;
     final path =
-        _path ?? p.join(await factory.getDatabasesPath(), 'taskflow.db');
-    _db = await factory.openDatabase(
+        databasePath ??
+        p.join(await activeFactory.getDatabasesPath(), 'taskflow.db');
+    _db = await activeFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
         version: 3,

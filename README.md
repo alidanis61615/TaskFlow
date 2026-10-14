@@ -71,7 +71,7 @@ Sürüm geçişleri eski kayıtlara `due_date` ve `category` alanlarını ekler.
 
 ## Yerelde çalıştırma
 
-Flutter SDK, Android araçları ve bir cihaz/emülatör gerekir. Android proje dosyaları ilk kurulumda üretilir.
+Flutter stable (Dart 3.12 veya üstü), Android araçları ve bir cihaz/emülatör gerekir. Android proje dosyaları ilk kurulumda üretilir.
 
 ```bash
 git clone https://github.com/alidanis61615/TaskFlow.git
