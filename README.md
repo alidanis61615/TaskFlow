@@ -5,15 +5,15 @@ Flutter ve Dart ile geliştirilen Android uygulaması; görevleri öncelik, kate
 [![Flutter checks](https://github.com/alidanis61615/TaskFlow/actions/workflows/flutter-checks.yml/badge.svg?branch=main)](https://github.com/alidanis61615/TaskFlow/actions/workflows/flutter-checks.yml)
 [![Android build](https://github.com/alidanis61615/TaskFlow/actions/workflows/build-apk.yml/badge.svg?branch=main)](https://github.com/alidanis61615/TaskFlow/actions/workflows/build-apk.yml)
 
-**[Ekranlar](#ekran-görüntüleri) · [Özellikler](#özellikler) · [Kurulum](#yerelde-çalıştırma) · [APK derlemeleri](https://github.com/alidanis61615/TaskFlow/actions/workflows/build-apk.yml)**
+**[Ekranlar](#ekran-görüntüleri) · [Özellikler](#özellikler) · [Kurulum](#yerelde-çalıştırma) · [Android APK indir](https://github.com/alidanis61615/TaskFlow/releases/latest)**
 
 ## Teknik incelemeye hızlı başlangıç
 
 | İnceleme | Kaynak |
 | --- | --- |
-| Görev modeli, SQLite CRUD ve veritabanı sürüm geçişleri | [`Task` ve `TaskDatabase`](lib/main.dart) |
-| Arama, filtreler, tema ve görev ekranları | [Uygulama akışları](lib/main.dart) |
-| Model dönüşümleri ve güncelleme davranışı | [Model testleri](test/task_model_test.dart) |
+| Görev modeli, SQLite CRUD ve veritabanı sürüm geçişleri | [Model](lib/models/task.dart) · [SQLite servisi](lib/services/task_database.dart) |
+| Arama, filtreler, tema ve görev ekranları | [Ekran](lib/screens/task_home.dart) · [Görev formu](lib/widgets/task_editor.dart) · [Sorgular](lib/services/task_query.dart) |
+| Görev, SQLite sürüm geçişi ve ekran davranışları | [Otomatik testler](test/) |
 | Analiz ve test süreci | [GitHub Actions](.github/workflows/flutter-checks.yml) |
 
 ## Ekran görüntüleri
@@ -50,7 +50,7 @@ Gerçek Android cihazda çalışan uygulamadan alınan görüntüler.
 | Model | `Task`; `toMap()`, `fromMap()`, `copyWith()` |
 | Veritabanı | `TaskDatabase` singleton; `sqflite`, parametreli güncelleme/silme |
 | Tercihler | SharedPreferences ile açık/koyu tema |
-| Kontroller | Görev modeli testi; GitHub Actions ile analiz, test ve APK derlemesi |
+| Kontroller | Model, sorgu, gerçek SQLite ve widget testleri; GitHub Actions ile analiz, test ve APK derlemesi |
 
 ### SQLite şeması
 
@@ -91,11 +91,13 @@ flutter analyze
 flutter test
 ```
 
-Model testi ve otomatik analiz, cihaz üzerindeki tüm etkileşimleri kapsamaz. Gerçek cihazda görev ekleme/düzenleme/silme, tamamlama, arama, tema değiştirme ve yeniden açılışta veri korunması kullanıcı tarafından denenmiştir.
+Testler; görev ekleme/düzenleme/tamamlama/silme, sürüm 1 → 3 veritabanı geçişi, arama, kategori/durum filtreleri ve tarih sıralamasını kapsar. Widget testleri ekrandan görev oluşturma, arama, tamamlama, onayla silme ve boş başlığı reddetme akışını çalıştırır. SQLite testleri gerçek bir geçici/in-memory veritabanı kullanır.
 
 ## APK indirme
 
-**[Actions → Build Android APK](https://github.com/alidanis61615/TaskFlow/actions/workflows/build-apk.yml)** altında başarılı bir çalışmayı açın. **Artifacts** bölümünden `TaskFlow-Android-APK` paketini indirin. İş akışı `app-release.apk` üretir ve artefaktı 14 gün saklar. Mağaza yayını için imzalama ve dağıtım ayrıca yapılandırılmalıdır.
+**[GitHub Releases → Android APK indir](https://github.com/alidanis61615/TaskFlow/releases/latest)**. Sürüm sayfasının **Assets** bölümündeki `TaskFlow-Android.apk` dosyasını indirin. Kalıcı sürüm dosyası, geçici Actions artefaktının saklama süresine bağlı değildir.
+
+APK, analiz ve testlerden sonra derlenir. Portföy demosu için üretilen APK'dır; mağaza dağıtımı için ayrı üretim imzası gerekir. Yeni sürüm yayınlama, `Build Android APK` iş akışının `main` üzerinden **publish** seçeneğiyle elle çalıştırılır.
 
 ## Proje hakkında
 

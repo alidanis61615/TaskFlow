@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskflow/main.dart';
+import 'package:taskflow/models/task.dart';
 
 void main() {
   test('Task serializes completion', () {
