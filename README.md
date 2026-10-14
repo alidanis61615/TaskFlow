@@ -7,6 +7,15 @@ Flutter ve Dart ile geliştirilen Android uygulaması; görevleri öncelik, kate
 
 **[Ekranlar](#ekran-görüntüleri) · [Özellikler](#özellikler) · [Kurulum](#yerelde-çalıştırma) · [APK derlemeleri](https://github.com/alidanis61615/TaskFlow/actions/workflows/build-apk.yml)**
 
+## Teknik incelemeye hızlı başlangıç
+
+| İnceleme | Kaynak |
+| --- | --- |
+| Görev modeli, SQLite CRUD ve veritabanı sürüm geçişleri | [`Task` ve `TaskDatabase`](lib/main.dart) |
+| Arama, filtreler, tema ve görev ekranları | [Uygulama akışları](lib/main.dart) |
+| Model dönüşümleri ve güncelleme davranışı | [Model testleri](test/task_model_test.dart) |
+| Analiz ve test süreci | [GitHub Actions](.github/workflows/flutter-checks.yml) |
+
 ## Ekran görüntüleri
 
 Gerçek Android cihazda çalışan uygulamadan alınan görüntüler.
