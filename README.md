@@ -13,7 +13,7 @@ Görev modeli, SQLite CRUD, kategori/öncelik/son tarih akışları ve arama/fil
 
 **Teknik kararım:** Veritabanı sürüm geçişleriyle mevcut görevleri korumak ve ekranın veri kaynağını bir repository arayüzü üzerinden kullanmak. Böylece veri işlemleri ile arayüz ayrı test edilebilir.
 
-**Çözdüğüm hata:** Boş görev başlığının kaydedilmesini engelledim ve veri yükleme/kaydetme hatalarını kullanıcıya gösterdim. SQLite sürüm 1 → 3 geçişinde eski görevlerin korunmasını otomatik testle doğruladım.
+**Çözdüğüm hata:** Boş görev başlığının kaydedilmesini engelledim ve veri yükleme/kaydetme hatalarını kullanıcıya gösterdim. SQLite sürüm 1 → 3 geçişinde eski görevlerin korunmasını otomatik testle doğruladım. Android testinin yakaladığı, klavye açıkken küçük ekran taşmasını kaydırılabilir görünümle düzelttim ve bir regresyon testi ekledim.
 
 
 ## Teknik incelemeye hızlı başlangıç
@@ -27,11 +27,11 @@ Görev modeli, SQLite CRUD, kategori/öncelik/son tarih akışları ve arama/fil
 
 ## Ekran görüntüleri
 
-Gerçek Android cihazda çalışan uygulamadan alınan görüntüler.
+Android emülatöründe çalışan uygulamadan alınan gerçek arayüz görüntüleri. Görevler **kurgusal portföy kayıtlarıdır**. Ekranlar [Android test akışı](.github/workflows/android-demo.yml) ile yeniden oluşturulabilir.
 
-| Açık tema | Koyu tema | Tamamlanan görev |
-| --- | --- | --- |
-| <a href="light-theme.jpg"><img src="light-theme.jpg" alt="TaskFlow açık tema" width="230"></a> | <a href="dark-theme.jpg"><img src="dark-theme.jpg" alt="TaskFlow koyu tema" width="230"></a> | <a href="completed-task.jpg"><img src="completed-task.jpg" alt="TaskFlow tamamlanan görev" width="230"></a> |
+| Görev listesi | Arama | Tamamlanan görevler | Koyu tema |
+| --- | --- | --- | --- |
+| <img src="docs/media/taskflow-light.png" alt="TaskFlow: altı görev ve günlük özet" width="210"> | <img src="docs/media/taskflow-search.png" alt="TaskFlow: portföy görevini arama" width="210"> | <img src="docs/media/taskflow-completed.png" alt="TaskFlow: tamamlanan görevleri filtreleme" width="210"> | <img src="docs/media/taskflow-dark.png" alt="TaskFlow: kaydedilmiş koyu tema" width="210"> |
 
 ## Özellikler
 
