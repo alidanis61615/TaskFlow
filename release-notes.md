@@ -1,9 +1,7 @@
-## TaskFlow 1.1.0
+## TaskFlow 1.1.1
 
-Android cihazınıza kurarak portföy projesini deneyebilirsiniz. APK, bu sürümün kaynak kodundan GitHub Actions üzerinde analiz ve testlerden sonra derlenir.
+- Android emülatöründe dolu görev listesi, arama, tamamlanan görev filtresi ve tema tercihi testleri eklendi.
+- Çalışan uygulamadan ekran görüntüleri ve kısa demo kaydı üretilebilir.
+- Üretim APK'sını kurma, uygulamayı yeniden açma ve kaydedilmiş görevleri kontrol etme akışı eklendi.
 
-- Model, veritabanı servisi ve ekran kodları ayrı dosyalara taşındı.
-- Görev ekleme, tamamlama, arama, silme ve SQLite sürüm geçişi testleri eklendi.
-- Boş görev başlıkları reddedilir; kayıt hataları kullanıcıya gösterilir.
-
-Bu APK portföy demosudur. Mağaza dağıtımı için ayrı üretim imzası yapılandırılmalıdır. Mevcut uygulama kurulumunuzu değiştirmeden önce verilerinizi yedekleyin.
+APK portföy demosudur; fiziksel telefon testi ve mağaza için üretim imzası ayrıca gerekir.

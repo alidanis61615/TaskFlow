@@ -62,14 +62,24 @@ void main() {
       await tester.enterText(search, 'Portföy');
       await tester.pumpAndSettle();
       expect(find.text('Portföy sunumunu hazırla'), findsOneWidget);
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
       await capture('taskflow-search');
       await tester.enterText(search, '');
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Biten'));
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Biten'));
+      await tester.tap(find.text('Biten'));
       await tester.pumpAndSettle();
       expect(find.text('SQLite testlerini çalıştır'), findsOneWidget);
       await capture('taskflow-completed');
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Tümü').last);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(SegmentedButton<int>),
+          matching: find.text('Tümü'),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Tema değiştir'));
       await tester.runAsync(

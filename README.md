@@ -7,6 +7,15 @@ Flutter ve Dart ile geliştirilen Android uygulaması; görevleri öncelik, kate
 
 **[Ekranlar](#ekran-görüntüleri) · [Özellikler](#özellikler) · [Kurulum](#yerelde-çalıştırma) · [Android APK indir](https://github.com/alidanis61615/TaskFlow/releases/latest)**
 
+## Bu portföy sürümündeki katkım
+
+Görev modeli, SQLite CRUD, kategori/öncelik/son tarih akışları ve arama/filtreleme üzerinde çalıştım. Model, veri erişimi, sorgu mantığı, ekran ve düzenleme formunu ayrı dosyalara ayırdım.
+
+**Teknik kararım:** Veritabanı sürüm geçişleriyle mevcut görevleri korumak ve ekranın veri kaynağını bir repository arayüzü üzerinden kullanmak. Böylece veri işlemleri ile arayüz ayrı test edilebilir.
+
+**Çözdüğüm hata:** Boş görev başlığının kaydedilmesini engelledim ve veri yükleme/kaydetme hatalarını kullanıcıya gösterdim. SQLite sürüm 1 → 3 geçişinde eski görevlerin korunmasını otomatik testle doğruladım.
+
+
 ## Teknik incelemeye hızlı başlangıç
 
 | İnceleme | Kaynak |

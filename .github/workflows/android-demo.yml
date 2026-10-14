@@ -34,6 +34,13 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: android-gradle-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: android-gradle-${{ runner.os }}-
       - name: Prebuild application and instrumentation
         run: |
           flutter build apk --release
